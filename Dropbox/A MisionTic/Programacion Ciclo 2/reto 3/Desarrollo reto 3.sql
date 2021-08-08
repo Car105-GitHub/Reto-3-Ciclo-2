@@ -1,3 +1,5 @@
+-- requerimiento 1
+
 SELECT  p.ID_Proyecto,
         p.Clasificacion,
         sum( c.Cantidad * m.Precio_Unidad ) as Gasto_Compras,
@@ -10,3 +12,107 @@ c.ID_MaterialConstruccion = m.ID_MaterialConstruccion
 GROUP BY p.ID_Proyecto
 ORDER BY Gasto_Compras DESC
 LIMIT 10;
+
+
+SELECT  c.ID_Proyecto, 
+        p.Clasificacion, 
+        SUM(mc.Precio_Unidad * c.Cantidad) as Gasto_Compras, 
+        p.Serial 
+FROM Compra c
+JOIN MaterialConstruccion mc ON
+c.ID_MaterialConstruccion = mc.ID_MaterialConstruccion
+JOIN Proyecto p ON
+c.ID_Proyecto = p.ID_Proyecto 
+GROUP BY c.ID_Proyecto 
+ORDER BY Gasto_Compras DESC
+LIMIT 10;
+
+
+
+-- requerimiento 2
+
+SELECT  l.ID_Lider,
+        l.Nombre,
+        l.Primer_Apellido,
+        l.Clasificacion
+FROM Lider l
+WHERE l.Clasificacion != 2 AND l.Clasificacion != 5
+ORDER BY    l.Clasificacion DESC,
+            l.ID_Lider ASC;
+
+
+
+
+
+
+
+
+-- Requerimiento3: Bancos ordenados de mayor a menor según el 
+-- área de construcción promedio de los proyectos que respaldan.
+
+--Mónica
+SELECT  p.Banco_Vinculado,
+	    AVG(t.Area_Max) as Area_Promedio
+FROM Proyecto p
+JOIN Tipo t ON
+	p.ID_Tipo = t.ID_Tipo
+GROUP BY p.Banco_Vinculado 
+ORDER BY Area_Promedio DESC;
+
+
+
+
+-- Requerimiento4: Ranking de las constructoras 
+-- que tienen el mayor número de proyectos a cargo.
+
+--Edgar
+SELECT  p.Constructora, 
+        COUNT(ID_Proyecto) as Numero_Proyectos        
+FROM
+    Proyecto p
+GROUP BY p.Constructora
+ORDER BY Numero_Proyectos DESC;
+
+--Mónica
+SELECT  p.Constructora, 
+        COUNT(1) as Numero_Proyectos        
+FROM
+    Proyecto p
+GROUP BY p.Constructora
+ORDER BY Numero_Proyectos DESC;
+
+
+
+
+
+
+-- Requerimiento 5: Los materiales importados más 
+-- comprados en los proyectos, mostrando cuántas 
+-- compras se han hecho de cada uno. 
+-- Desempatar alfabéticamente.
+
+--Freddie y Mónica
+SELECT  mc.Nombre_Material, 
+        mc.Importado,
+        COUNT(c.ID_Compra) as No_Compras
+FROM Compra c 
+inner JOIN MaterialConstruccion mc 
+ON mc.ID_MaterialConstruccion = c.ID_MaterialConstruccion  
+WHERE mc.Importado = "Si"
+GROUP BY mc.ID_MaterialConstruccion
+ORDER BY    No_Compras DESC, 
+            mc.Nombre_Material;
+
+--Mauricio
+SELECT mc.Nombre_Material , 
+mc.Importado ,
+COUNT(mc.ID_MaterialConstruccion) AS No_Compras 
+FROM MaterialConstruccion mc 
+JOIN Compra c 
+ON mc.ID_MaterialConstruccion = c.ID_MaterialConstruccion 
+WHERE mc.Importado LIKE 'si'
+GROUP BY mc.ID_MaterialConstruccion
+ORDER BY No_Compras DESC, Nombre_Material ASC;
+
+
+
